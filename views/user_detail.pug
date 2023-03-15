@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1=title
+
+  p Name: #{user.fullname}
+
+  p Membership status: #{user.membership}
+
+  if(user.admin)
+    p Administrator
+  else
+    p No administrator priviledges. 

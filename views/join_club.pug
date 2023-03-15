@@ -1,0 +1,11 @@
+extends layout
+
+block content
+
+  h1= title
+  p To join the club, answer the following question:
+  p What is the best color?
+  form(action="" method="POST")
+    label(for="answerquestion")Answer:
+    input#answerquestion(name="answerquestion" required="true" maxlength="50" type="text")
+    button(type="submit") Send

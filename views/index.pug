@@ -1,0 +1,16 @@
+extends layout
+
+block content
+  h1= title
+
+  if(user.membership === "Insider")
+    ul
+      each message in messageboard
+        li #{message.message_author.fullname} on #{message.message_timestamp} said:
+        | #{message.title}
+        | #{message.content}
+  else
+    ul
+      each message in messageboard
+        li #{message.title}
+        | #{message.content}

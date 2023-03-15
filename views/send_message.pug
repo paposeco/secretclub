@@ -1,0 +1,13 @@
+extends layout
+
+block content
+  h1= title
+
+  div
+    p #{user.fullname}
+    form(action="" method="POST")
+      label(for="messagetitle") Title:
+      input#messagetitle(type="text" name="messagetitle" required="true" maxlength="100")
+      label(for="newmessage") Message:
+      input#newmessage(type="text" name="newmessage" required="true" maxlength="300")
+      button(type="submit") Send

@@ -1,0 +1,17 @@
+extends layout
+
+block content
+  h1= title
+  p= errors
+  form.flex.flex-col.max-w-xl(action="" method="POST")
+    label(for="firstname") First name:
+    input#firstname(type="text" name="firstname" required="true" maxlength="100" value=(formvalues === undefined ? "" :formvalues.firstname))
+    label(for="lastname") Last name:
+    input#lastname(type="text" name="lastname" required="true" maxlength="100" value=(formvalues === undefined ? "" :formvalues.lastname))
+    label(for="email") Email:
+    input#email(type="email" name="email" required="true" value=(formvalues === undefined ? "" :formvalues.email))
+    label(for="password") Password:
+    input#password(type="password" name="password" required="true")
+    label(for="confirmpassword") Repeat password:
+    input#confirmpassword(type="password" name="confirmpassword" required="true")
+    button(type="submit") Sign up
