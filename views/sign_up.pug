@@ -2,7 +2,9 @@ extends layout
 
 block content
   h1= title
-  p= errors
+  if(errors)
+    each error in errors
+      p #{error.msg}
   form.flex.flex-col.max-w-xl(action="" method="POST")
     label(for="firstname") First name:
     input#firstname(type="text" name="firstname" required="true" maxlength="100" value=(formvalues === undefined ? "" :formvalues.firstname))

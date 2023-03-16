@@ -3,14 +3,17 @@ extends layout
 block content
   h1= title
 
-  if(user.membership === "Insider")
-    ul
-      each message in messageboard
-        li #{message.message_author.fullname} on #{message.message_timestamp} said:
-        | #{message.title}
-        | #{message.content}
+  if(messageboard === undefined)
+    p There are no messages to display.
   else
-    ul
-      each message in messageboard
-        li #{message.title}
-        | #{message.content}
+    if(user.membership === "Insider")
+      ul
+        each message in messageboard
+          li #{message.message_author.fullname} on #{message.message_timestamp} said:
+          | #{message.title}
+          | #{message.content}
+    else
+      ul
+        each message in messageboard
+          li #{message.title}
+          | #{message.content}

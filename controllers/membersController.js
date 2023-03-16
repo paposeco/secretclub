@@ -27,6 +27,11 @@ exports.signup_post = [
     .isLength({ max: 100 })
     .withMessage("First name is required."),
   body("email").isEmail().normalizeEmail().isLength({ min: 1 }),
+  body("password").exists(),
+  body("confirmpassword")
+    .exists()
+    .custom((value, { req }) => value === req.body.password)
+    .withMessage("Passwords don't match"),
 
   async function(req, res, next) {
     const errors = validationResult(req);
@@ -38,11 +43,13 @@ exports.signup_post = [
       });
       return;
     }
+
     try {
-      const checkemail = await Member.find({ email: req.body.email }).exec();
+      const checkemail = await Member.find({ username: req.body.email }).exec();
       if (checkemail.length > 0) {
         res.render("sign_up", {
-          errors: "E-mail is already in use.",
+          title: "Sign up",
+          errors: "Error: E-mail is already in use.",
           formvalues: req.body,
         });
         return;
@@ -50,32 +57,50 @@ exports.signup_post = [
     } catch (err) {
       return next(err);
     }
+    const member = new Member({
+      first_name: req.body.firstname,
+      last_name: req.body.lastname,
+      username: req.body.email,
+      password: req.body.password,
+      membership: "Outsider",
+      admin: false,
+    });
+
     try {
-      bcrypt.hash(req.body.password, 10, async function(err, hashedpassword) {
-        if (err) {
-          return next(err);
-        }
-        const member = new Member({
-          first_name: req.body.firstname,
-          last_name: req.body.lastname,
-          username: req.body.email,
-          password: hashedpassword,
-          membership: "Outsider",
-          admin: false,
-        });
-        // faltam as mensagens e montes de coisas do passaport
-        try {
-          await member.save();
-          res.render("index", {
-            user: member,
-          });
-        } catch (err) {
-          return next(err);
-        }
+      await member.save();
+      res.render("index", {
+        user: member,
       });
     } catch (err) {
       return next(err);
     }
+
+    /* try {
+     *   bcrypt.hash(req.body.password, 10, async function(err, hashedpassword) {
+     *     if (err) {
+     *       return next(err);
+     *     }
+     *     const member = new Member({
+     *       first_name: req.body.firstname,
+     *       last_name: req.body.lastname,
+     *       username: req.body.email,
+     *       password: hashedpassword,
+     *       membership: "Outsider",
+     *       admin: false,
+     *     });
+     *     // faltam as mensagens e montes de coisas do passaport
+     *     try {
+     *       await member.save();
+     *       res.render("index", {
+     *         user: member,
+     *       });
+     *     } catch (err) {
+     *       return next(err);
+     *     }
+     *   });
+     * } catch (err) {
+     *   return next(err);
+     * } */
   },
 ];
 
