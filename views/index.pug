@@ -1,11 +1,18 @@
 extends layout
 
+block header
+  include header
+  +header(user)
+
 block content
   h1= title
-
+  if(user)
+    a(href='/sendmessage') Send message
   if(messageboard === undefined)
     p There are no messages to display.
   else
+   - console.log("messages")
+   - console.log(messageboard)
     if(user.membership === "Insider")
       ul
         each message in messageboard
@@ -17,3 +24,4 @@ block content
         each message in messageboard
           li #{message.title}
           | #{message.content}
+  

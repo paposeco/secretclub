@@ -1,7 +1,12 @@
 extends layout
-
+block header
+  include header
+  +header(false)
 block content
   h1= title
+  if(messages)
+    each message in messages
+      p #{message}
   form(action="" method="POST")
     label(for="username") Email:
     input#username(type="email" required="true" name="username")

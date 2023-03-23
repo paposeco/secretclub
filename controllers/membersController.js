@@ -4,10 +4,8 @@ const Member = require("../models/member");
 const bcrypt = require("bcryptjs");
 
 exports.login_get = (req, res, next) => {
-  res.render("log_in", { title: "Login" });
+  res.render("log_in", { title: "Login", messages: req.session.messages });
 };
-
-exports.login_post = (req, res, next) => { };
 
 exports.signup_get = (req, res, next) => {
   res.render("sign_up", { title: "Sign up" });
@@ -109,3 +107,7 @@ exports.join_club_get = (req, res, next) => { };
 exports.join_club_post = (req, res, next) => { };
 
 exports.membership = (req, res, next) => { };
+
+exports.logout_get = (req, res, next) => {
+  res.render("log_out", { title: "Logout?" });
+};

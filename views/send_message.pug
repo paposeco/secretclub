@@ -1,5 +1,8 @@
 extends layout
 
+block header
+  include header
+  +header(true)
 block content
   h1= title
 

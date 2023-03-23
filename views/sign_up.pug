@@ -1,5 +1,9 @@
 extends layout
 
+block header
+  include header
+  +header(false)
+
 block content
   h1= title
   if(errors)

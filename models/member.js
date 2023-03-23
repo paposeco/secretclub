@@ -11,7 +11,7 @@ const MemberSchema = new Schema({
 });
 
 MemberSchema.virtual("fullname").get(function() {
-  return this.firstname + " " + this.lastname;
+  return this.first_name + " " + this.last_name;
 });
 
 module.exports = mongoose.model("Member", MemberSchema);

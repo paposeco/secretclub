@@ -1,0 +1,10 @@
+extends layout
+block header
+  include header
+  +header(true)
+block content
+
+  p Are you sure you want to logout?
+
+  form(action="" method="POST")
+    button(type=submit) Logout
