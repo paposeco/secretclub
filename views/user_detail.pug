@@ -7,6 +7,10 @@ block content
 
   p Membership status: #{user.membership}
 
+  if(user.membership === "Outside")
+    Want to join the club?
+    |
+    a(href="/join-club") Face the challenge
   if(user.admin)
     p Administrator
   else

@@ -5,8 +5,12 @@ const Schema = mongoose.Schema;
 const MessageSchema = new Schema({
   title: { type: String, required: true, maxLength: 100 },
   message_content: { type: String, required: true, maxLength: 300 },
-  timestamp: { type: Date, default: Date.now, required: true },
-  message_author: { type: Schema.Types.ObjectId, ref: "User", required: true },
+  timestamp: { type: Date, default: Date.now },
+  message_author: {
+    type: Schema.Types.ObjectId,
+    ref: "Member",
+    required: true,
+  },
 });
 
 MessageSchema.virtual("message_timestamp").get(function() {

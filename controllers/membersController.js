@@ -55,58 +55,56 @@ exports.signup_post = [
     } catch (err) {
       return next(err);
     }
-    const member = new Member({
-      first_name: req.body.firstname,
-      last_name: req.body.lastname,
-      username: req.body.email,
-      password: req.body.password,
-      membership: "Outsider",
-      admin: false,
-    });
 
     try {
-      await member.save();
-      res.render("index", {
-        user: member,
+      bcrypt.hash(req.body.password, 10, async function(err, hashedpassword) {
+        if (err) {
+          return next(err);
+        }
+        const member = new Member({
+          first_name: req.body.firstname,
+          last_name: req.body.lastname,
+          username: req.body.email,
+          password: hashedpassword,
+          membership: "Outsider",
+          admin: false,
+        });
+        try {
+          await member.save();
+          res.render("index", {
+            user: member,
+          });
+        } catch (err) {
+          return next(err);
+        }
       });
     } catch (err) {
       return next(err);
     }
-
-    /* try {
-     *   bcrypt.hash(req.body.password, 10, async function(err, hashedpassword) {
-     *     if (err) {
-     *       return next(err);
-     *     }
-     *     const member = new Member({
-     *       first_name: req.body.firstname,
-     *       last_name: req.body.lastname,
-     *       username: req.body.email,
-     *       password: hashedpassword,
-     *       membership: "Outsider",
-     *       admin: false,
-     *     });
-     *     // faltam as mensagens e montes de coisas do passaport
-     *     try {
-     *       await member.save();
-     *       res.render("index", {
-     *         user: member,
-     *       });
-     *     } catch (err) {
-     *       return next(err);
-     *     }
-     *   });
-     * } catch (err) {
-     *   return next(err);
-     * } */
   },
 ];
 
-exports.join_club_get = (req, res, next) => { };
+exports.join_club_get = (req, res, next) => {
+  if (req.session.passport) {
+    res.render("join_club", (title = "Join the club"));
+  } else {
+    res.redirect("/");
+  }
+};
 
 exports.join_club_post = (req, res, next) => { };
 
-exports.membership = (req, res, next) => { };
+exports.membership = async function(req, res, next) {
+  if (!req.session.passport) {
+    res.redirect("/");
+  }
+  try {
+    const member = await Member.findById(req.session.passport.user);
+    res.render("user_detail", { user: member });
+  } catch (err) {
+    return next(err);
+  }
+};
 
 exports.logout_get = (req, res, next) => {
   res.render("log_out", { title: "Logout?" });

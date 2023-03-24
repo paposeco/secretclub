@@ -3,6 +3,7 @@ var router = express.Router();
 const passport = require("passport");
 const Member = require("../models/member");
 const LocalStrategy = require("passport-local").Strategy;
+const bcrypt = require("bcryptjs");
 
 passport.use(
   new LocalStrategy(async function verify(username, password, done) {
@@ -11,20 +12,14 @@ passport.use(
       if (!member) {
         return done(null, false, { message: "Incorrect username" });
       }
-      // check password
-      if (member.password !== password) {
-        return done(null, false, { message: "Wrong password" });
-      }
-      return done(null, member);
-      /* bcrypt.compare(password, user.password, (err, res) => {
-       *   if (res) {
-       *     // passwords match! log user in
-       *     return done(null, user);
-       *   } else {
-       *     // passwords do not match!
-       *     return done(null, false, { message: "Incorrect password" });
-       *   }
-       * }); */
+      bcrypt.compare(password, member.password, (err, res) => {
+        if (res) {
+          // passwords match
+          return done(null, member);
+        } else {
+          return done(null, false, { message: "Wrong password" });
+        }
+      });
     } catch (err) {
       if (err) {
         return done(err);

@@ -7,5 +7,10 @@ block content
   p What is the best color?
   form(action="" method="POST")
     label(for="answerquestion")Answer:
-    input#answerquestion(name="answerquestion" required="true" maxlength="50" type="text")
+    select#answerquestion.form-control(type="select" placeholder="selectcolor" name="answerquestion" required="true")
+      option(value="Pink") Pink
+      option(value="Yellow") Yellow
+      option(value="White") White
+      option(value="Green") Green
+      option(value="Black") Black
     button(type="submit") Send
