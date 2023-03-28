@@ -1,0 +1,10 @@
+extends layout
+
+block header
+  include header
+  +header(user)
+
+block content
+  h1= title
+
+

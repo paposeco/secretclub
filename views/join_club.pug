@@ -1,16 +1,26 @@
 extends layout
 
+block header
+  include header
+  +header(user)
+
 block content
 
   h1= title
+  if(error)
+    each error in errors
+      p #{error.msg}
+  if(wrongcolor)
+    p Terrible taste. Care to try again?
+
   p To join the club, answer the following question:
   p What is the best color?
   form(action="" method="POST")
-    label(for="answerquestion")Answer:
     select#answerquestion.form-control(type="select" placeholder="selectcolor" name="answerquestion" required="true")
+      option(value="") Select a color
       option(value="Pink") Pink
       option(value="Yellow") Yellow
       option(value="White") White
       option(value="Green") Green
       option(value="Black") Black
-    button(type="submit") Send
+    button(type="submit") Submit

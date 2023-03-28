@@ -71,9 +71,7 @@ exports.signup_post = [
         });
         try {
           await member.save();
-          res.render("index", {
-            user: member,
-          });
+          res.redirect("/");
         } catch (err) {
           return next(err);
         }
@@ -86,13 +84,47 @@ exports.signup_post = [
 
 exports.join_club_get = (req, res, next) => {
   if (req.session.passport) {
-    res.render("join_club", (title = "Join the club"));
+    res.render("join_club", { title: "Join the club" });
   } else {
     res.redirect("/");
   }
 };
 
-exports.join_club_post = (req, res, next) => { };
+exports.join_club_post = [
+  body("answerquestion")
+    .isLength({ min: 1 })
+    .withMessage("Selecting a color is required."),
+  async function(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.render("join_club", {
+        title: "Join the club",
+        errors: errors.array(),
+      });
+      return;
+    }
+    if (req.body.answerquestion !== "Black") {
+      res.render("join_club", {
+        title: "Join the club",
+        wrongcolor: true,
+      });
+      return;
+    }
+    if (req.session.passport === undefined) {
+      res.redirect("/");
+      return;
+    }
+    try {
+      const userid = req.session.passport.user;
+      const doc = await Member.findById(userid);
+      doc.membership = "Insider";
+      await doc.save();
+      res.redirect("/membership");
+    } catch (err) {
+      return next(err);
+    }
+  },
+];
 
 exports.membership = async function(req, res, next) {
   if (!req.session.passport) {
@@ -109,3 +141,7 @@ exports.membership = async function(req, res, next) {
 exports.logout_get = (req, res, next) => {
   res.render("log_out", { title: "Logout?" });
 };
+
+exports.become_admin_get = (req, res, next) => { };
+
+exports.become_admin_post = (req, res, next) => { };

@@ -3,34 +3,51 @@ const Member = require("../models/member");
 const async = require("async");
 const { body, validationResult } = require("express-validator");
 
-exports.homepage = async function (req, res, next) {
+exports.homepage_get = async function(req, res, next) {
   const pass = req.session.passport;
-  console.log(pass);
-  if (!pass) {
-    res.render("index", { title: "Secret club message board", user: false });
-    return;
-  } else {
+  if (pass) {
     try {
       const member = await Member.findById(pass.user);
-      try {
-        const messages = await Message.find()
-          .sort({ timestamp: 1 })
-          .populate("message_author");
-        res.render("index", {
-          title: "Secret club message board",
-          messageboard: messages,
-          user: member,
-        });
-      } catch (err) {
-        return next(err);
-      }
+      const messages = await Message.find()
+        .sort({ timestamp: 1 })
+        .populate("message_author");
+      res.render("index", {
+        title: "Secret club message board",
+        messageboard: messages,
+        user: member,
+      });
+    } catch (err) {
+      return next(err);
+    }
+  } else {
+    try {
+      const messages = await Message.find()
+        .sort({ timestamp: 1 })
+        .populate("message_author");
+      res.render("index", {
+        title: "Secret club message board",
+        messageboard: messages,
+      });
     } catch (err) {
       return next(err);
     }
   }
 };
 
-exports.create_message_get = async function (req, res, next) {
+exports.homepage_post = async function(req, res, next) {
+  const messageId = req.body.deletemessage;
+  if (messageId === undefined) {
+    res.redirect("/");
+  }
+  try {
+    await Message.findByIdAndDelete(messageId);
+    res.redirect("/");
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.create_message_get = async function(req, res, next) {
   if (!req.session.passport) {
     res.redirect("/");
   } else {
@@ -59,7 +76,7 @@ exports.create_message_post = [
     .isLength({ max: 300 })
     .withMessage("Maximum 300 characters exceeded."),
 
-  async function (req, res, next) {
+  async function(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.render("send_message", {
@@ -81,23 +98,7 @@ exports.create_message_post = [
           message_author: userid,
         });
         await message.save();
-        try {
-          const member = await Member.findById(userid);
-          try {
-            const messages = await Message.find()
-              .sort({ timestamp: 1 })
-              .populate("message_author");
-            res.render("index", {
-              title: "Secret club message board",
-              messageboard: messages,
-              user: member,
-            });
-          } catch (err) {
-            return next(err);
-          }
-        } catch (err) {
-          return next(err);
-        }
+        res.redirect("/");
       } catch (err) {
         return next(err);
       }

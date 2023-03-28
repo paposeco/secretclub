@@ -1,17 +1,30 @@
 extends layout
 
+block header
+  include header
+  +header(true)
+
 block content
   h1=title
 
   p Name: #{user.fullname}
 
   p Membership status: #{user.membership}
+  if(user.membership === "Insider")
+    p Yay you're an insider. Congrats!
 
-  if(user.membership === "Outside")
-    Want to join the club?
-    |
-    a(href="/join-club") Face the challenge
   if(user.admin)
     p Administrator
   else
-    p No administrator priviledges. 
+    p No administrator priviledges.
+    p Do you have the "Become admin" special code?
+      |
+      |
+      a(href="/become-admin") Submit it.
+
+  if(user.membership === "Outsider")
+    p Want to join the club?
+    |
+    |
+    a(href="/join-club") Face the challenge
+ 
