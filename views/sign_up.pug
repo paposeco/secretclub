@@ -5,11 +5,11 @@ block header
   +header(false)
 
 block content
-  h1= title
+  h2= title
   if(errors)
     each error in errors
       p #{error.msg}
-  form.flex.flex-col.max-w-xl(action="" method="POST")
+  form.flex.flex-col.items-start.w-min(action="" method="POST")
     label(for="firstname") First name:
     input#firstname(type="text" name="firstname" required="true" maxlength="100" value=(formvalues === undefined ? "" :formvalues.firstname))
     label(for="lastname") Last name:
@@ -20,4 +20,4 @@ block content
     input#password(type="password" name="password" required="true")
     label(for="confirmpassword") Repeat password:
     input#confirmpassword(type="password" name="confirmpassword" required="true")
-    button(type="submit") Sign up
+    button.self-center(type="submit") Sign up

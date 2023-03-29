@@ -4,7 +4,7 @@ block header
   include header
   +header(true)
 block content
-  h1= title
+  h2= title
 
   if(errors)
     each error in errors
@@ -14,7 +14,7 @@ block content
       p #{user.fullname}
     else
       p #{username}
-    form(action="" method="POST")
+    form.flex.flex-col(action="" method="POST")
       input#usernameforpost(type="hidden" value=(user === undefined ? username : user.fullname))
       label(for="messagetitle") Title:
       input#messagetitle(type="text" name="messagetitle" required="true" maxlength="100" value=(formvalues === undefined ? "" : formvalues.messagetitle))

@@ -28,7 +28,7 @@ exports.homepage_get = async function(req, res, next) {
         .populate("message_author");
       const decodedThings = decoder(messages, member);
       res.render("index", {
-        title: "Secret club message board",
+        title: "Message board",
         messageboard: decodedThings[0],
         user: decodedThings[1],
       });
@@ -42,7 +42,7 @@ exports.homepage_get = async function(req, res, next) {
         .populate("message_author");
       const decodedThings = decoder(messages, false);
       res.render("index", {
-        title: "Secret club message board",
+        title: "Message board",
         messageboard: decodedThings[0],
       });
     } catch (err) {

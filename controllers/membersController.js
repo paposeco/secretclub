@@ -6,7 +6,7 @@ const he = require("he");
 require("dotenv").config();
 
 exports.login_get = (req, res, next) => {
-  res.render("log_in", { title: "Login", messages: req.session.messages });
+  res.render("log_in", { title: "Log in", messages: req.session.messages });
 };
 
 exports.signup_get = (req, res, next) => {
