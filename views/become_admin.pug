@@ -2,9 +2,15 @@ extends layout
 
 block header
   include header
-  +header(user)
+  +header(true)
 
 block content
   h1= title
-
-
+  if(errors)
+    each error in errors
+      p #{error.msg}
+  p Submit the secret code here.
+  form(action='' method="POST")
+    label(for="adminsecretcode") Secret code: 
+    input#adminsecretcode(type="password" name="adminsecretcode" required="true" maxlength="24")
+    button(type='submit') Submit

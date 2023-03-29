@@ -2,6 +2,8 @@ const async = require("async");
 const { body, validationResult } = require("express-validator");
 const Member = require("../models/member");
 const bcrypt = require("bcryptjs");
+const he = require("he");
+require("dotenv").config();
 
 exports.login_get = (req, res, next) => {
   res.render("log_in", { title: "Login", messages: req.session.messages });
@@ -132,6 +134,7 @@ exports.membership = async function(req, res, next) {
   }
   try {
     const member = await Member.findById(req.session.passport.user);
+    member.fullname = he.decode(member.fullname);
     res.render("user_detail", { user: member });
   } catch (err) {
     return next(err);
@@ -142,6 +145,48 @@ exports.logout_get = (req, res, next) => {
   res.render("log_out", { title: "Logout?" });
 };
 
-exports.become_admin_get = (req, res, next) => { };
+exports.become_admin_get = (req, res, next) => {
+  if (req.session.passport === undefined) {
+    res.redirect("/");
+    return;
+  }
+  res.render("become_admin", { title: "Get administrator privileges" });
+};
 
-exports.become_admin_post = (req, res, next) => { };
+exports.become_admin_post = [
+  body("adminsecretcode")
+    .escape()
+    .trim()
+    .isLength({ min: 1 })
+    .withMessage("Secret code is required.")
+    .isLength({ max: 24 })
+    .withMessage("Secret code is too long."),
+
+  async function(req, res, next) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      res.render("become_admin", {
+        title: "Get administrator privileges",
+        errors: errors.array(),
+      });
+    }
+    // check password
+    const secretcode = process.env.SECRET_CLUB_ADMIN;
+    if (secretcode === req.body.adminsecretcode) {
+      try {
+        const userid = req.session.passport.user;
+        const doc = await Member.findById(userid);
+        doc.admin = true;
+        await doc.save();
+        res.redirect("/membership");
+      } catch (err) {
+        return next(err);
+      }
+    } else {
+      res.render("become_admin", {
+        title: "Get administrator privileges",
+        errors: [{ msg: "Wrong password!" }],
+      });
+    }
+  },
+];

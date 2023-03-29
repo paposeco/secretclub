@@ -7,6 +7,7 @@ block header
 block content
   h1= title
   if(user)
+    p Hello #{user.fullname}
     a(href='/sendmessage') Send new message
   if(messageboard === undefined || messageboard.length === 0)
     p There are no messages to display.

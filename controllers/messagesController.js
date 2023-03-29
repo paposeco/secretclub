@@ -1,7 +1,22 @@
 const Message = require("../models/message");
 const Member = require("../models/member");
 const async = require("async");
+const he = require("he");
 const { body, validationResult } = require("express-validator");
+
+const decoder = function(messagecollection, user) {
+  let messagearray = [];
+  messagecollection.forEach((message) => {
+    message.title = he.decode(message.title);
+    message.message_content = he.decode(message.message_content);
+    messagearray.push(message);
+  });
+  if (!user) {
+    return [messagearray, false];
+  }
+  user.fullname = he.decode(user.fullname);
+  return [messagearray, user];
+};
 
 exports.homepage_get = async function(req, res, next) {
   const pass = req.session.passport;
@@ -9,12 +24,13 @@ exports.homepage_get = async function(req, res, next) {
     try {
       const member = await Member.findById(pass.user);
       const messages = await Message.find()
-        .sort({ timestamp: 1 })
+        .sort({ timestamp: -1 })
         .populate("message_author");
+      const decodedThings = decoder(messages, member);
       res.render("index", {
         title: "Secret club message board",
-        messageboard: messages,
-        user: member,
+        messageboard: decodedThings[0],
+        user: decodedThings[1],
       });
     } catch (err) {
       return next(err);
@@ -22,11 +38,12 @@ exports.homepage_get = async function(req, res, next) {
   } else {
     try {
       const messages = await Message.find()
-        .sort({ timestamp: 1 })
+        .sort({ timestamp: -1 })
         .populate("message_author");
+      const decodedThings = decoder(messages, false);
       res.render("index", {
         title: "Secret club message board",
-        messageboard: messages,
+        messageboard: decodedThings[0],
       });
     } catch (err) {
       return next(err);
