@@ -2,29 +2,58 @@ extends layout
 
 block header
   include header
-  +header(true)
+  +header(user)
 
 block content
-  h1=title
+  include pagetitle
+  +pagetitle(title)
 
-  p Name: #{user.fullname}
+  p
+    i.las.la-caret-right
+    |
+    | Full name: #{user.fullname}
 
-  p Membership status: #{user.membership}
   if(user.membership === "Insider")
-    p Yay you're an insider. Congrats!
-
-  if(user.admin)
-    p Administrator
+    p
+      i.las.la-caret-right
+      |
+      | Membership status:
+      |
+      |
+      span#insider.text-blue-500.font-bold Insider
+        span.text-zinc-700.font-normal
+          |
+          |
+          i.las.la-hand-point-right
+          |
+          |
+          span Yay you're an insider. Congrats!
+    if(user.admin)
+      p
+        i.las.la-caret-right
+        |
+        | Administrator
+    else
+      p
+        i.las.la-caret-right
+        |
+        | No administrator privileges. Do you have the "Become admin" special code?
+        |
+        |
+        a.underline(href="/become-admin") Submit it
+        |.
   else
-    p No administrator privileges.
-    p Do you have the "Become admin" special code?
+    p
+      i.las.la-caret-right
+      |
+      | Membership status:
       |
       |
-      a(href="/become-admin") Submit it.
+      span.text-blue-500.font-bold Outsider
 
-  if(user.membership === "Outsider")
     p Want to join the club?
-    |
-    |
-    a(href="/join-club") Face the challenge
- 
+      |
+      |
+      a.underline(href="/join-club") Face the challenge
+      |!
+

@@ -4,7 +4,9 @@ const members_controller = require("../controllers/membersController");
 const messages_controller = require("../controllers/messagesController");
 
 /* GET home page. */
+
 router.get("/", messages_controller.homepage_get);
+router.get("/messageboard/:pagenumber", messages_controller.homepage_get);
 router.post("/", messages_controller.homepage_post);
 
 router.get("/log-in", members_controller.login_get);

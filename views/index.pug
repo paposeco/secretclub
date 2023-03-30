@@ -5,53 +5,57 @@ block header
   +header(user)
 
 block content
-  h2= title
+  include pagetitle
+  +pagetitle(title)
   div.ml-2
     if(user)
-      div.flex.flex-row.gap-3.items-center.mb-8
-        h3.border-b-2.border-b-blue-600.border-dotted Hello #{user.fullname}!
-        a.px-4.py-2.bg-blue-600.rounded-full.text-stone-50.font-bold(href='/sendmessage') Send message
+      div.mb-4
+        a.font-bold.text-lg.text-fuchsia-500(href="/sendmessage")
+          |
+          i.las.la-paper-plane
+          |
+          | Send message
     if(messageboard === undefined || messageboard.length === 0)
       p There are no messages to display.
     else
-      if(user)
-        if(user.membership === "Insider")
-          ul.flex.flex-col.gap-4
-            - let colorswitch = false
-            each message in messageboard
-              - const author = (message.message_author.admin ? message.message_author.fullname + " (admin) on " + message.message_timestamp + " said:" : message.message_author.fullname + " on " + message.message_timestamp + " said:")
-              if(colorswitch)
-                - colorswitch = false
-                li.border-l-2.border-l-fuchsia-500.pl-4
-                  p= author
-                  div.ml-4
-                    p.font-semibold #{message.title}
-                    p #{message.message_content}
-              else
-                - colorswitch = true
-                li.border-l-2.border-l-blue-600.pl-4
-                  p= author
-                  div.ml-4
-                    p.font-semibold #{message.title}
-                    p #{message.message_content}
-              if(user.admin)
-                form(action="" method="POST")
-                  input#deletemessage(type="hidden" name="deletemessage" value=message._id.toString())
-                  button(type="submit") Delete message
+      if(user && user.membership === "Insider")
+        ul.flex.flex-col.gap-4
+          - let colorswitch = false
+          each message in messageboard
+            - const author = (message.message_author.admin ? message.message_author.fullname + " (admin) on " + message.message_timestamp + " said:" : message.message_author.fullname + " on " + message.message_timestamp + " said:")
+            if(colorswitch)
+              - colorswitch = false
+              li
+                p.pl-4= author
+                div.ml-4.pl-2.mt-1.boardpink
+                  p.font-semibold #{message.title}
+                  p #{message.message_content}
+            else
+              - colorswitch = true
+              li
+                p.pl-4= author
+                div.ml-4.pl-2.mt-1.boardblue
+                  p.font-semibold #{message.title}
+                  p #{message.message_content}
+            if(user.admin)
+              form(action="" method="POST")
+                input#deletemessage(type="hidden" name="deletemessage" value=message._id.toString())
+                button(type="submit") Delete message
       else
         ul.flex.flex-col.gap-4
           - let colorswitch = false
           each message in messageboard
             if(colorswitch)
               - colorswitch = false
-              li.border-l-2.border-l-fuchsia-500
+              li.boardpink
                 div.ml-4
                   p.font-semibold #{message.title}
                   p #{message.message_content}
             else
               - colorswitch = true
-              li.border-l-2.border-l-blue-500
+              li.boardblue
                 div.ml-4
                   p.font-semibold #{message.title}
                   p #{message.message_content}
-  
+    include pagination
+    +pagination(pagination)

@@ -19,37 +19,96 @@ const decoder = function(messagecollection, user) {
 };
 
 exports.homepage_get = async function(req, res, next) {
-  const pass = req.session.passport;
-  if (pass) {
+  const pagenumber = req.params.pagenumber;
+  if (pagenumber) {
+    const numberpages = Number(pagenumber.substring(4));
     try {
-      const member = await Member.findById(pass.user);
-      const messages = await Message.find()
-        .sort({ timestamp: -1 })
-        .populate("message_author");
-      const decodedThings = decoder(messages, member);
-      res.render("index", {
-        title: "Message board",
-        messageboard: decodedThings[0],
-        user: decodedThings[1],
-      });
+      const totalmessages = Message.countDocuments({});
+      // previous page last message timestamp
+      // fetch docs multiplying the limit per page -1 and getting the timestamp for the last doc on the query? then query again with > timestamp and new limit
     } catch (err) {
       return next(err);
     }
   } else {
-    try {
-      const messages = await Message.find()
-        .sort({ timestamp: -1 })
-        .populate("message_author");
-      const decodedThings = decoder(messages, false);
-      res.render("index", {
-        title: "Message board",
-        messageboard: decodedThings[0],
-      });
-    } catch (err) {
-      return next(err);
+    const pass = req.session.passport;
+    if (pass) {
+      try {
+        const member = await Member.findById(pass.user);
+        const messages = await Message.find()
+          .limit(3)
+          .sort({ timestamp: -1 })
+          .populate("message_author");
+        const totalmessages = await Message.countDocuments({});
+        const pagestoshow =
+          Number(totalmessages) % 3 > 0
+            ? Math.floor(Number(totalmessages) / 3) + 1
+            : Number(totalmessages) / 3;
+        const decodedThings = decoder(messages, member);
+        res.render("index", {
+          title: "Message board",
+          messageboard: decodedThings[0],
+          user: decodedThings[1],
+          pagination: pagestoshow,
+        });
+      } catch (err) {
+        return next(err);
+      }
+    } else {
+      try {
+        const messages = await Message.find()
+          .limit(3)
+          .sort({ timestamp: -1 })
+          .populate("message_author");
+        const totalmessages = await Message.countDocuments({});
+        const pagestoshow =
+          Number(totalmessages) % 3 > 0
+            ? Math.floor(Number(totalmessages) / 3) + 1
+            : Number(totalmessages) / 3;
+        const decodedThings = decoder(messages, false);
+        res.render("index", {
+          title: "Message board",
+          messageboard: decodedThings[0],
+          pagination: pagestoshow,
+        });
+      } catch (err) {
+        return next(err);
+      }
     }
   }
 };
+
+/* exports.homepage_get = async function(req, res, next) {
+ *   const pass = req.session.passport;
+ *   if (pass) {
+ *     try {
+ *       const member = await Member.findById(pass.user);
+ *       const messages = await Message.find()
+ *                                     .sort({ timestamp: -1 })
+ *                                     .populate("message_author");
+ *       const decodedThings = decoder(messages, member);
+ *       res.render("index", {
+ *         title: "Message board",
+ *         messageboard: decodedThings[0],
+ *         user: decodedThings[1],
+ *       });
+ *     } catch (err) {
+ *       return next(err);
+ *     }
+ *   } else {
+ *     try {
+ *       const messages = await Message.find()
+ *                                     .sort({ timestamp: -1 })
+ *                                     .populate("message_author");
+ *       const decodedThings = decoder(messages, false);
+ *       res.render("index", {
+ *         title: "Message board",
+ *         messageboard: decodedThings[0],
+ *       });
+ *     } catch (err) {
+ *       return next(err);
+ *     }
+ *   }
+ * }; */
 
 exports.homepage_post = async function(req, res, next) {
   const messageId = req.body.deletemessage;

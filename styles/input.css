@@ -4,7 +4,7 @@
 
 @layer base{
     body{
-        @apply my-10 mx-auto text-base w-2/3 bg-stone-50;
+        @apply my-10 mx-auto text-base w-2/3 bg-stone-50 text-zinc-700;
     }
     nav ul{
         @apply flex flex-row gap-4 my-5;
@@ -22,8 +22,11 @@
     h3{
         @apply text-lg;
     }
-    input[type="text"], input[type="email"], input[type="password"]{
+    input[type="text"], input[type="email"], input[type="password"], select{
         @apply rounded-full border-fuchsia-500 py-1.5 w-72;
+    }
+    textarea{
+        @apply rounded-2xl border-fuchsia-500 py-1.5 w-1/2;
     }
     form{
         @apply flex flex-row gap-3 items-center ml-2 mt-2;
@@ -31,4 +34,22 @@
     button[type="submit"]{
         @apply px-8 py-2 bg-blue-600 rounded-full text-stone-50 font-bold;
     }
+    #messagetitle{
+        @apply w-1/2;
+    }
 }
+
+.boardpink{
+    border-left-width: 2px;
+    border-left-color: rgba(217, 70, 239, 0.5);
+}
+
+.boardblue{
+    border-left-width: 2px;
+    border-left-color: rgba(37, 99, 235, 0.5);
+}
+
+#insider{
+    transition: color 0.5 ease-in-out 0.5s;
+}
+

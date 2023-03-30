@@ -5,7 +5,8 @@ block header
   +header(false)
 
 block content
-  h2= title
+  include pagetitle
+  +pagetitle(title)
   if(errors)
     each error in errors
       p #{error.msg}

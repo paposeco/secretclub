@@ -1,15 +1,24 @@
 mixin header(loggedin)
-  div.flex.flex-row.justify-between.items-center
-    h1 Secret Club
+  div.flex.flex-row.justify-between.items-center.mb-4
+    div.flex.flex-row.gap-1
+      i.lab.la-intercom.text-3xl.text-fuchsia-500
+      |
+      |
+      h1
+        a(href="/") Secret Club
     if(loggedin)
-      nav
+      nav.flex.flex-row.gap-4.items-center
+        p Hello, #{user.fullname}
+        |
+        |
+        span.text-fuchsia-500.font-semibold \\
         ul
           li
             a(href="/") Message board
           li
-            a(href="/log-out") Log out
-          li
             a(href="/membership") Membership status
+          li
+            a(href="/log-out") Log out
     else
       nav
         ul

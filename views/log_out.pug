@@ -3,7 +3,8 @@ block header
   include header
   +header(true)
 block content
-
+  include pagetitle
+  +pagetitle(title)
   div.flex.flex-row.gap-3.items-center
     p Ready to leave?
     form(action="" method="POST")

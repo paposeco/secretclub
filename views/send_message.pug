@@ -2,22 +2,19 @@ extends layout
 
 block header
   include header
-  +header(true)
+  +header(user)
 block content
-  h2= title
+  include pagetitle
+  +pagetitle(title)
 
   if(errors)
     each error in errors
       p #{error.msg}
-  div
-    if(user)
-      p #{user.fullname}
-    else
-      p #{username}
-    form.flex.flex-col(action="" method="POST")
+  div.w-full
+    form.flex.flex-col.items-start(action="" method="POST")
       input#usernameforpost(type="hidden" value=(user === undefined ? username : user.fullname))
-      label(for="messagetitle") Title:
+      label(for="messagetitle") Message title:
       input#messagetitle(type="text" name="messagetitle" required="true" maxlength="100" value=(formvalues === undefined ? "" : formvalues.messagetitle))
       label(for="newmessage") Message:
-      input#newmessage(type="text" name="newmessage" required="true" maxlength="300" value=(formvalues === undefined ? "" : formvalues.newmessage))
+      textarea.resize-none#newmessage(name="newmessage" required="true" minlength="1" maxlength="300" rows="6" value=(formvalues === undefined ? "" : formvalues.newmessage))
       button(type="submit") Send

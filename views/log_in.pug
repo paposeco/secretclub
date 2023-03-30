@@ -3,7 +3,9 @@ block header
   include header
   +header(false)
 block content
-  h2= title
+  include pagetitle
+  +pagetitle(title)
+
   if(messages)
     each message in messages
       p #{message}

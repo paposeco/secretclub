@@ -5,15 +5,16 @@ block header
   +header(user)
 
 block content
-
-  h1= title
+  include pagetitle
+  +pagetitle(title)
   if(error)
     each error in errors
       p #{error.msg}
   if(wrongcolor)
     p Terrible taste. Care to try again?
 
-  p To join the club, answer the following question:
+  if(!wrongcolor)
+    p To join the club, answer the following question:
   p What is the best color?
   form(action="" method="POST")
     select#answerquestion.form-control(type="select" placeholder="selectcolor" name="answerquestion" required="true")

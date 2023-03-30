@@ -1,0 +1,9 @@
+mixin pagination(pages)
+  div.flex.flex-row.gap-4
+    ul
+      li
+        a(href="/") 1
+      - for(let i = 2; i <= pages; i++)
+          - const pagelink = "/messageboard/page" + i
+          li
+            a(href=pagelink) #{i}

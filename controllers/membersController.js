@@ -2,6 +2,7 @@ const async = require("async");
 const { body, validationResult } = require("express-validator");
 const Member = require("../models/member");
 const bcrypt = require("bcryptjs");
+const passport = require("passport");
 const he = require("he");
 require("dotenv").config();
 
@@ -72,8 +73,17 @@ exports.signup_post = [
           admin: false,
         });
         try {
-          await member.save();
-          res.redirect("/");
+          const newmember = await member.save();
+          const passuser = {
+            id: newmember._id,
+            username: req.body.email,
+          };
+          req.login(passuser, function(err) {
+            if (err) {
+              return next(err);
+            }
+            res.redirect("/");
+          });
         } catch (err) {
           return next(err);
         }
@@ -84,9 +94,15 @@ exports.signup_post = [
   },
 ];
 
-exports.join_club_get = (req, res, next) => {
+exports.join_club_get = async function(req, res, next) {
   if (req.session.passport) {
-    res.render("join_club", { title: "Join the club" });
+    try {
+      const member = await Member.findById(req.session.passport.user);
+      member.fullname = he.decode(member.fullname);
+      res.render("join_club", { title: "Join the club", user: member });
+    } catch (err) {
+      return next(err);
+    }
   } else {
     res.redirect("/");
   }
@@ -105,16 +121,23 @@ exports.join_club_post = [
       });
       return;
     }
-    if (req.body.answerquestion !== "Black") {
-      res.render("join_club", {
-        title: "Join the club",
-        wrongcolor: true,
-      });
-      return;
-    }
     if (req.session.passport === undefined) {
       res.redirect("/");
       return;
+    }
+    if (req.body.answerquestion !== "Black") {
+      try {
+        const member = await Member.findById(req.session.passport.user);
+        member.fullname = he.decode(member.fullname);
+        res.render("join_club", {
+          title: "Join the club",
+          user: member,
+          wrongcolor: true,
+        });
+        return;
+      } catch (err) {
+        return next(err);
+      }
     }
     try {
       const userid = req.session.passport.user;
@@ -135,22 +158,41 @@ exports.membership = async function(req, res, next) {
   try {
     const member = await Member.findById(req.session.passport.user);
     member.fullname = he.decode(member.fullname);
-    res.render("user_detail", { user: member });
+    res.render("user_detail", { user: member, title: "Membership status" });
   } catch (err) {
     return next(err);
   }
 };
 
-exports.logout_get = (req, res, next) => {
-  res.render("log_out", { title: "Logout?" });
-};
-
-exports.become_admin_get = (req, res, next) => {
+exports.logout_get = async function(req, res, next) {
   if (req.session.passport === undefined) {
     res.redirect("/");
     return;
   }
-  res.render("become_admin", { title: "Get administrator privileges" });
+  try {
+    const member = await Member.findById(req.session.passport.user);
+    member.fullname = he.decode(member.fullname);
+    res.render("log_out", { title: "Logout?", user: member });
+  } catch (err) {
+    return next(err);
+  }
+};
+
+exports.become_admin_get = async function(req, res, next) {
+  if (req.session.passport === undefined) {
+    res.redirect("/");
+    return;
+  }
+  try {
+    const member = await Member.findById(req.session.passport.user);
+    member.fullname = he.decode(member.fullname);
+    res.render("become_admin", {
+      title: "Get administrator privileges",
+      user: member,
+    });
+  } catch (err) {
+    return next(err);
+  }
 };
 
 exports.become_admin_post = [
@@ -183,10 +225,17 @@ exports.become_admin_post = [
         return next(err);
       }
     } else {
-      res.render("become_admin", {
-        title: "Get administrator privileges",
-        errors: [{ msg: "Wrong password!" }],
-      });
+      try {
+        const member = await Member.findById(req.session.passport.user);
+        member.fullname = he.decode(member.fullname);
+        res.render("become_admin", {
+          title: "Get administrator privileges",
+          errors: [{ msg: "Wrong password!" }],
+          user: member,
+        });
+      } catch (err) {
+        return next(err);
+      }
     }
   },
 ];
