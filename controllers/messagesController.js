@@ -4,7 +4,7 @@ const async = require("async");
 const he = require("he");
 const { body, validationResult } = require("express-validator");
 
-const decoder = function(messagecollection, user) {
+const decoder = function (messagecollection, user) {
   let messagearray = [];
   messagecollection.forEach((message) => {
     message.title = he.decode(message.title);
@@ -18,99 +18,79 @@ const decoder = function(messagecollection, user) {
   return [messagearray, user];
 };
 
-exports.homepage_get = async function(req, res, next) {
+exports.homepage_get = async function (req, res, next) {
   const pagenumber = req.params.pagenumber;
-  if (pagenumber) {
-    const numberpages = Number(pagenumber.substring(4));
+  const pass = req.session.passport;
+  // finds messages to display, limited to 10
+  let messages;
+  const messagesLimit = 10;
+  try {
+    if (pagenumber) {
+      // only find messages with a timestamp older than the last message on the previous page
+      const numberpages = Number(pagenumber.substring(4));
+      const prevLimit = messagesLimit * (numberpages - 1);
+      const prevPage = await Message.find({})
+        .limit(prevLimit)
+        .sort({ timestamp: -1 });
+      const lastMessage = prevPage[prevPage.length - 1];
+      const lastMessageTimestamp = lastMessage.timestamp;
+      // timestamp is being sorted ascending from db, because the messages are then being decoded and the array is reversed there
+      messages = await Message.find({
+        timestamp: { $lt: lastMessageTimestamp },
+      })
+        .limit(messagesLimit)
+        .sort({ timestamp: -1 })
+        .populate("message_author");
+    } else {
+      messages = await Message.find()
+        .limit(messagesLimit)
+        .sort({ timestamp: -1 })
+        .populate("message_author");
+    }
+  } catch (err) {
+    return next(err);
+  }
+  // renders according to type of user
+  if (pass) {
     try {
-      const totalmessages = Message.countDocuments({});
-      // previous page last message timestamp
-      // fetch docs multiplying the limit per page -1 and getting the timestamp for the last doc on the query? then query again with > timestamp and new limit
+      const member = await Member.findById(pass.user);
+      const totalmessages = await Message.countDocuments({});
+      const pagestoshow =
+        Number(totalmessages) % messagesLimit > 0
+          ? Math.floor(Number(totalmessages) / messagesLimit) + 1
+          : Number(totalmessages) / messagesLimit;
+      const decodedThings = decoder(messages, member);
+      res.render("index", {
+        title: "Message board",
+        messageboard: decodedThings[0],
+        user: decodedThings[1],
+        pagination: pagestoshow,
+        currentpage: pagenumber === undefined ? "1" : pagenumber.substring(4),
+      });
     } catch (err) {
       return next(err);
     }
   } else {
-    const pass = req.session.passport;
-    if (pass) {
-      try {
-        const member = await Member.findById(pass.user);
-        const messages = await Message.find()
-          .limit(3)
-          .sort({ timestamp: -1 })
-          .populate("message_author");
-        const totalmessages = await Message.countDocuments({});
-        const pagestoshow =
-          Number(totalmessages) % 3 > 0
-            ? Math.floor(Number(totalmessages) / 3) + 1
-            : Number(totalmessages) / 3;
-        const decodedThings = decoder(messages, member);
-        res.render("index", {
-          title: "Message board",
-          messageboard: decodedThings[0],
-          user: decodedThings[1],
-          pagination: pagestoshow,
-        });
-      } catch (err) {
-        return next(err);
-      }
-    } else {
-      try {
-        const messages = await Message.find()
-          .limit(3)
-          .sort({ timestamp: -1 })
-          .populate("message_author");
-        const totalmessages = await Message.countDocuments({});
-        const pagestoshow =
-          Number(totalmessages) % 3 > 0
-            ? Math.floor(Number(totalmessages) / 3) + 1
-            : Number(totalmessages) / 3;
-        const decodedThings = decoder(messages, false);
-        res.render("index", {
-          title: "Message board",
-          messageboard: decodedThings[0],
-          pagination: pagestoshow,
-        });
-      } catch (err) {
-        return next(err);
-      }
+    try {
+      const totalmessages = await Message.countDocuments({});
+      const pagestoshow =
+        Number(totalmessages) % messagesLimit > 0
+          ? Math.floor(Number(totalmessages) / messagesLimit) + 1
+          : Number(totalmessages) / messagesLimit;
+      const decodedThings = decoder(messages, false);
+      res.render("index", {
+        title: "Message board",
+        messageboard: decodedThings[0],
+        pagination: pagestoshow,
+        currentpage: pagenumber === undefined ? "1" : pagenumber.substring(4),
+      });
+    } catch (err) {
+      return next(err);
     }
   }
 };
 
-/* exports.homepage_get = async function(req, res, next) {
- *   const pass = req.session.passport;
- *   if (pass) {
- *     try {
- *       const member = await Member.findById(pass.user);
- *       const messages = await Message.find()
- *                                     .sort({ timestamp: -1 })
- *                                     .populate("message_author");
- *       const decodedThings = decoder(messages, member);
- *       res.render("index", {
- *         title: "Message board",
- *         messageboard: decodedThings[0],
- *         user: decodedThings[1],
- *       });
- *     } catch (err) {
- *       return next(err);
- *     }
- *   } else {
- *     try {
- *       const messages = await Message.find()
- *                                     .sort({ timestamp: -1 })
- *                                     .populate("message_author");
- *       const decodedThings = decoder(messages, false);
- *       res.render("index", {
- *         title: "Message board",
- *         messageboard: decodedThings[0],
- *       });
- *     } catch (err) {
- *       return next(err);
- *     }
- *   }
- * }; */
-
-exports.homepage_post = async function(req, res, next) {
+exports.homepage_post = async function (req, res, next) {
   const messageId = req.body.deletemessage;
   if (messageId === undefined) {
     res.redirect("/");
@@ -123,7 +103,7 @@ exports.homepage_post = async function(req, res, next) {
   }
 };
 
-exports.create_message_get = async function(req, res, next) {
+exports.create_message_get = async function (req, res, next) {
   if (!req.session.passport) {
     res.redirect("/");
   } else {
@@ -152,7 +132,7 @@ exports.create_message_post = [
     .isLength({ max: 300 })
     .withMessage("Maximum 300 characters exceeded."),
 
-  async function(req, res, next) {
+  async function (req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
       res.render("send_message", {

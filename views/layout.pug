@@ -3,10 +3,16 @@ html(lang="en")
   head
     title= title
     meta(charset='UTF-8')
+    meta(name="viewport" content="width=device-width, initial-scale=1.0")
     link(rel='stylesheet', href='/stylesheets/style.css')
     link(rel="stylesheet" href="/line-awesome/css/line-awesome.min.css")
     script(src='/javascripts/script.js')
   body
     block header
-    div.ml-2
+    div.ml-2.grow.flex.flex-col
       block content
+
+    footer.mb-4.mt-8.text-center
+      a.text-fuchsia-700(href="https://github.com/paposeco/" alt="github")
+        i.lab.la-github
+        | Fabi

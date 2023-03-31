@@ -3,8 +3,11 @@
 @tailwind utilities;
 
 @layer base{
+    html{
+        @apply min-h-screen flex flex-col;
+    }
     body{
-        @apply my-10 mx-auto text-base w-2/3 bg-stone-50 text-zinc-700;
+        @apply my-10 mx-auto text-base w-7/12 bg-stone-50 text-zinc-700 grow flex flex-col;
     }
     nav ul{
         @apply flex flex-row gap-4 my-5;
@@ -32,10 +35,16 @@
         @apply flex flex-row gap-3 items-center ml-2 mt-2;
     }
     button[type="submit"]{
-        @apply px-8 py-2 bg-blue-600 rounded-full text-stone-50 font-bold;
+        @apply px-8 py-2 bg-blue-600 rounded-full text-stone-50 font-bold hover:bg-blue-700;
     }
     #messagetitle{
         @apply w-1/2;
+    }
+    .currentpage{
+        @apply font-bold;
+    }
+    a{
+        @apply hover:text-indigo-500;
     }
 }
 
@@ -53,3 +62,6 @@
     transition: color 0.5 ease-in-out 0.5s;
 }
 
+.trash{
+    padding: 4px 8px !important;
+}
