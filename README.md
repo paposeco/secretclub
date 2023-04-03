@@ -1,6 +1,6 @@
 # Secret club message board
 
-This is an exercise for The Odin Project. Got a chance to learn more about authentication, mongoose and tailwind (by choice). Deployed here: https://secretclub-production.up.railway.app/
+This is an exercise for The Odin Project. Got a chance to learn more about authentication, mongoose and tailwind (by choice). Deployed on [railways]( https://secretclub-production.up.railway.app/).
 
 ## Features
 
