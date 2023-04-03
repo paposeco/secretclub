@@ -8,6 +8,9 @@ const indexRouter = require("./routes/index");
 const authRouter = require("./routes/auth");
 const passport = require("passport");
 const LocalStrategy = require("passport-local").Strategy;
+const compression = require("compression");
+const helmet = require("helmet");
+const RateLimit = require("express-rate-limit");
 
 //db
 require("dotenv").config();
@@ -20,6 +23,15 @@ async function main() {
 }
 
 var app = express();
+app.use(compression());
+app.use(helmet());
+const limiter = RateLimit({
+  windowMs: 1 * 60 * 1000, // 1 minute
+  max: 20,
+});
+// Apply rate limiter to all requests
+app.use(limiter);
+
 // view engine setup
 app.set("views", path.join(__dirname, "views"));
 app.set("view engine", "pug");
