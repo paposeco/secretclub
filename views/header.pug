@@ -7,12 +7,12 @@ mixin header(loggedin)
       h1
         a(href="/") Secret Club
     if(loggedin)
-      nav.flex.flex-row.gap-4.items-center
+      nav(class="md:flex-row md:items-center").flex.flex-col.gap-4
         p Hello, #{user.fullname}
-        |
-        |
-        span.text-fuchsia-500.font-semibold \\
-        ul
+          |
+          |
+          span.text-fuchsia-500.font-semibold \\
+        ul(class="md:mt-5").mt-2
           li
             a(href="/") Message board
           li

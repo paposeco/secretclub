@@ -7,10 +7,10 @@
         @apply min-h-screen flex flex-col;
     }
     body{
-        @apply my-10 mx-auto text-base w-7/12 bg-stone-50 text-zinc-700 grow flex flex-col;
+        @apply my-10 mx-auto text-base 2xl:w-7/12 md:w-3/4 w-11/12 bg-stone-50 text-zinc-700 grow flex flex-col;
     }
     nav ul{
-        @apply flex flex-row gap-4 my-5;
+        @apply flex md:flex-row flex-col gap-4 my-5;
     }
 
     nav ul li a{
@@ -26,16 +26,16 @@
         @apply text-lg;
     }
     input[type="text"], input[type="email"], input[type="password"], select{
-        @apply rounded-full border-fuchsia-500 py-1.5 w-72;
+        @apply rounded-full border-fuchsia-500 py-1.5 md:w-72 w-full;
     }
     textarea{
         @apply rounded-2xl border-fuchsia-500 py-1.5 w-1/2;
     }
     form{
-        @apply flex flex-row gap-3 items-center ml-2 mt-2;
+        @apply flex md:flex-row flex-col gap-3 md:items-center ml-2 mt-2;
     }
     button[type="submit"]{
-        @apply px-8 py-2 bg-blue-600 rounded-full text-stone-50 font-bold hover:bg-blue-700;
+        @apply px-8 py-2 bg-blue-600 rounded-full text-stone-50 font-bold hover:bg-blue-700 w-fit;
     }
     #messagetitle{
         @apply w-1/2;
@@ -45,6 +45,12 @@
     }
     a{
         @apply hover:text-indigo-500;
+    }
+    .messagetitle{
+        @apply md:pl-4;
+    }
+    .boardpink, .boardblue{
+        @apply pl-2 mt-1 md:ml-4
     }
 }
 

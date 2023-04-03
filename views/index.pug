@@ -7,7 +7,7 @@ block header
 block content
   include pagetitle
   +pagetitle(title)
-  div.ml-2.grow.flex.flex-col
+  div(class="md:ml-2").grow.flex.flex-col
     if(user)
       div.mb-4
         a.font-bold.text-lg.text-fuchsia-500(href="/sendmessage")
@@ -26,32 +26,32 @@ block content
               - colorswitch = false
               li
                 if(message.message_author.admin)
-                  p.pl-4 #{message.message_author.fullname}
+                  p.messageauthor #{message.message_author.fullname}
                     |
                     span.align-top.text-sm
                       i.las.la-star
                     |
                     | on #{message.message_timestamp} said:
                 else
-                  p.pl-4 #{message.message_author.fullname} on #{message.message_timestamp} said:
+                  p.messageauthor #{message.message_author.fullname} on #{message.message_timestamp} said:
 
-                div.ml-4.pl-2.mt-1.boardpink
+                div.boardpink
                   p.font-semibold #{message.title}
                   p #{message.message_content}
             else
               - colorswitch = true
               li
                 if(message.message_author.admin)
-                  p.pl-4 #{message.message_author.fullname}
+                  p.messageauthor #{message.message_author.fullname}
                     |
                     span.align-top.text-sm
                       i.las.la-star
                     |
                     | on #{message.message_timestamp} said:
                 else
-                  p.pl-4 #{message.message_author.fullname} on #{message.message_timestamp} said:
+                  p.messageauthor #{message.message_author.fullname} on #{message.message_timestamp} said:
 
-                div.ml-4.pl-2.mt-1.boardblue
+                div.boardblue
                   p.font-semibold #{message.title}
                   p #{message.message_content}
             if(user.admin)
