@@ -13,4 +13,4 @@ Jane Doe is the only administrator, but a user can become an administrator with 
 
 I worked on a pagination feature which probably needs work to become more efficient. The page is responsive and it was the first time I used tailwind with that in mind, which made it a lot quicker.
 
-I'm happy with the final result.
+I'm happy with the final result!
