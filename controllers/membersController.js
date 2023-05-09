@@ -14,6 +14,7 @@ exports.signup_get = (req, res, next) => {
   res.render("sign_up", { title: "Sign up" });
 };
 
+// github test
 exports.signup_post = [
   body("firstname")
     .trim()
